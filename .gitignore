@@ -30,3 +30,10 @@ go.work.sum
 # Editor/IDE
 # .idea/
 # .vscode/
+
+**-compiled.ts
+**-compiled.tsx
+
+node_modules
+
+.DS_Store
