@@ -5,6 +5,8 @@ My custom framework for bun
 The goal is to learn golang while also inventing a new complier for fun while
 also create a nice tool for building my pet apps with bun.
 
+The "compiler" has very limited ts support with a lot of assumptions. But it's ok for now.
+
 This thing is not even compiles yet.
 
 The rules will be the following:
@@ -90,3 +92,4 @@ export const GET = createRote('/api/:id', async (args) => {
 
 5. Add all the relevant handlers for the context (TODO)
 6. Run the build tool or start in dev mode: TODO
+

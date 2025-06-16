@@ -1,0 +1,91 @@
+package tsconfig
+
+import (
+	jsParser "compiler/internal/parser/js-parser"
+	"compiler/internal/parser/types"
+	"encoding/json"
+	"errors"
+	"fmt"
+	"os"
+	"path/filepath"
+	"strings"
+)
+
+type GetAliasesProps struct {
+	BasePath         string
+	TsconfigFilePath string
+}
+
+func GetAliases(props GetAliasesProps) ([]types.ResolvedImportAlias, error) {
+	tsConfigFileBytes, err := os.ReadFile(props.TsconfigFilePath)
+	if err != nil {
+		return nil, errors.New("Error reading tsconfig file: " + props.TsconfigFilePath + "\n" + err.Error())
+	}
+
+	if tsConfigFileBytes == nil || len(tsConfigFileBytes) == 0 {
+		return nil, errors.New("tsconfig file is empty: " + props.TsconfigFilePath)
+	}
+
+	jsParser.RemoveComments(&tsConfigFileBytes)
+
+	var tsconfig types.TsConfig
+	err = json.Unmarshal(tsConfigFileBytes, &tsconfig)
+	if err != nil {
+		return nil, errors.New("Can't unmarshal tsconfig after removing all the comments. Likely the file is corrupted")
+	}
+
+	baseUrl := normalizePath(tsconfig.CompilerOptions.BaseUrl)
+	baseUrl, err = filepath.Abs(baseUrl)
+	if err != nil {
+		baseUrl, err = filepath.Abs(filepath.Join(props.BasePath, baseUrl))
+		if err != nil {
+			return nil, errors.New("Can't resolve baseUrl: " + baseUrl + "\n" + err.Error())
+		}
+		if !strings.HasPrefix(props.BasePath, baseUrl) {
+			fmt.Fprintln(os.Stderr, "Resolved baseUrl is outside of project's base directory: "+baseUrl+"\n")
+		}
+	}
+
+	resolvedAliases := make([]types.ResolvedImportAlias, 0, len(tsconfig.CompilerOptions.Paths))
+	for key, value := range tsconfig.CompilerOptions.Paths {
+		if !strings.HasSuffix(key, "/*") {
+			continue
+		}
+		alias := key[:len(key)-1]
+		resolvedPaths := make([]string, 0, len(value))
+		for _, path := range value {
+			if !strings.HasSuffix(path, "/*") {
+				continue
+			}
+			path = path[:len(path)-1]
+			if strings.HasPrefix(path, ".") {
+				absolutePath, err := filepath.Abs(filepath.Join(baseUrl, normalizePath(path)))
+				if err != nil {
+					fmt.Fprintln(os.Stderr, "Can't resolve path: "+path+"\n"+err.Error())
+					continue
+				}
+				resolvedPaths = append(resolvedPaths, absolutePath)
+				continue
+			}
+			absolutePath, err := filepath.Abs(filepath.Join(".", normalizePath(path)))
+			if err != nil {
+				fmt.Fprintln(os.Stderr, "Can't resolve path: "+path+"\n"+err.Error())
+				continue
+			}
+			resolvedPaths = append(resolvedPaths, absolutePath)
+		}
+		if len(resolvedPaths) == 0 {
+			continue
+		}
+		resolvedAliases = append(resolvedAliases, types.ResolvedImportAlias{
+			Alias: alias,
+			Paths: resolvedPaths,
+		})
+	}
+	return resolvedAliases, nil
+}
+
+func normalizePath(path string) string {
+	segments := strings.Split(path, "/")
+	return strings.Join(segments, string(filepath.Separator))
+}

@@ -1,27 +1,4 @@
-package main
-
-import (
-	"fmt"
-	"os"
-)
-
-func main() {
-	f, err := os.ReadFile("./tsconfig.json")
-	if err != nil {
-		fmt.Println("Error opening file")
-		os.Exit(1)
-	}
-
-	removeComments(&f)
-
-	fmt.Println(string(f))
-
-	err = os.WriteFile("./stripped.json", f, 0644)
-	if err != nil {
-		fmt.Println("Error writing file")
-		os.Exit(1)
-	}
-}
+package jsparser
 
 type ContentType int
 
@@ -32,7 +9,7 @@ const (
 	STRING
 )
 
-func removeComments(tsconfig *[]byte) {
+func RemoveComments(tsconfig *[]byte) {
 	var state ContentType
 	state = CODE
 	var stringOpeningSymbol byte
