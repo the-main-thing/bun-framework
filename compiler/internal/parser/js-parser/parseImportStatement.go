@@ -10,6 +10,8 @@ type NamedImport struct {
 }
 
 type ImportStatement struct {
+	StartIndex    int
+	EndIndex      int
 	SourcePath    string
 	NamedImports  []NamedImport
 	DefaultImport string
@@ -18,6 +20,7 @@ type ImportStatement struct {
 // we expect that all the comments are removed
 func ParseImportStatement(source *[]rune, cursor int) (ImportStatement, int) {
 	cursor = moveCursorToImportKeyword(source, cursor)
+	startIndex := cursor
 	if cursor == len(*source)-1 {
 		return ImportStatement{}, cursor
 	}
@@ -53,6 +56,7 @@ func ParseImportStatement(source *[]rune, cursor int) (ImportStatement, int) {
 	}
 
 	var importStatement ImportStatement
+	importStatement.StartIndex = startIndex
 	// default import
 	if isValidVariableFirstChar((*source)[cursor]) || isKeyword(source, cursor, "*") {
 
@@ -88,6 +92,7 @@ func ParseImportStatement(source *[]rune, cursor int) (ImportStatement, int) {
 					if start > 0 {
 						path := string((*source)[start : end+1])
 						importStatement.SourcePath = path
+						importStatement.EndIndex = end
 						return importStatement, end + 1
 					}
 					return ImportStatement{}, cursor
@@ -95,7 +100,6 @@ func ParseImportStatement(source *[]rune, cursor int) (ImportStatement, int) {
 			}
 		}
 	}
-
 
 	if cursor >= len(*source) {
 		return ImportStatement{}, len(*source) - 1
@@ -144,6 +148,7 @@ func ParseImportStatement(source *[]rune, cursor int) (ImportStatement, int) {
 	}
 	path := string((*source)[pathStart : pathEnd+1])
 	importStatement.SourcePath = path
+	importStatement.EndIndex = pathEnd
 	return importStatement, pathEnd + 1
 }
 
@@ -176,16 +181,6 @@ func findPath(source *[]rune, offset int) (int, int) {
 	}
 
 	return start, end
-}
-
-func isKeyword(source *[]rune, offset int, keyword string) bool {
-	if offset+len(keyword) >= len(*source) {
-		return false
-	}
-	if string((*source)[offset:offset+len(keyword)]) != keyword {
-		return false
-	}
-	return unicode.IsSpace((*source)[offset+len(keyword)])
 }
 
 func skipWhitespace(source *[]rune, cursor int) int {

@@ -13,3 +13,8 @@ type ResolvedImportAlias struct {
 	Alias string
 	Paths []string
 }
+
+type Export struct {
+	Default bool
+	Named []string
+}

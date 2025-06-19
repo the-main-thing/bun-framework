@@ -1,0 +1,3 @@
+package codegen
+
+const METHODS = "GET,POST,PUT,DELETE,PATCH,OPTIONS,HEAD"
