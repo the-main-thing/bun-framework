@@ -9,10 +9,10 @@ const (
 	STRING
 )
 
-func RemoveComments(tsconfig *[]byte) {
+func RemoveComments(tsconfig *[]rune) {
 	var state ContentType
 	state = CODE
-	var stringOpeningSymbol byte
+	var stringOpeningSymbol rune
 	for i, b := range *tsconfig {
 		switch state {
 		case STRING:

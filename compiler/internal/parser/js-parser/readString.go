@@ -15,21 +15,25 @@ func ReadString(input *[]byte, offset int) (start int, end int, error error) {
 					continue
 				}
 				stringClosed = true
-				endIndex = i + offset
+				endIndex = max(i + offset - 1, 0)
 				break
 			}
 			openingSymbol = b
-			startIndex = i + offset
+			startIndex = min(i + offset + 1, len(*input)-1)
 			continue
 		}
 	}
 
 	if len(*input) > 0 && openingSymbol == 0 {
-		return startIndex, endIndex, errors.New("No string opening symbol found. Maybe this is a variable?")
+		return 0, 0, errors.New("No string opening symbol found. Maybe this is a variable?")
 	}
 
 	if openingSymbol != 0 && !stringClosed {
-		return startIndex, endIndex, errors.New("String is not closed whith the same opening symbol")
+		return 0, 0, errors.New("String is not closed whith the same opening symbol")
+	}
+
+	if endIndex < startIndex {
+		panic("Logical error in ReadString: endIndex is smaller than startIndex")
 	}
 
 	return startIndex, endIndex, nil

@@ -1,5 +1,23 @@
+import { createRoute, type Route } from 'bun-framework'
+import { type FileBlob } from 'bun'
+import { someFunction, someConstant } from '../../some-function'
+import * as defaultAsterisk from 'fs'
+import type DefaultTypeImport, {
+	type NamedTypeImport,
+	namedNonTypeImport,
+} from 'mixed-type-and-non-type-imports'
+import { aliasedImport as Alias } from 'aliased-import'
+import {
+	type AliasedImport as AliasType,
+	nonAliasedImport,
+	nonTypeAliasedIimport as NonTypeAliasedImport,
+} from 'aliased-import'
+import path, { join } from 'path'
 import { Project } from 'ts-morph'
-import path from 'path'
+// commented out import
+// import bun from 'bun'
+
+import { type join as Join, join as as } from 'as'
 
 if (process.platform === 'win32') {
 	console.error('Windows is not supported.')

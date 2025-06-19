@@ -1,0 +1,4 @@
+package jsparser
+
+const VALID_IDENTIFIER_START_CHARS = "_$"
+const VALID_IDENTIFIER_NON_FIRST_CHARS = "0123456789"

@@ -26,10 +26,11 @@ func GetAliases(props GetAliasesProps) ([]types.ResolvedImportAlias, error) {
 		return nil, errors.New("tsconfig file is empty: " + props.TsconfigFilePath)
 	}
 
-	jsParser.RemoveComments(&tsConfigFileBytes)
+	runes := []rune(string(tsConfigFileBytes))
+	jsParser.RemoveComments(&runes)
 
 	var tsconfig types.TsConfig
-	err = json.Unmarshal(tsConfigFileBytes, &tsconfig)
+	err = json.Unmarshal([]byte(string(runes)), &tsconfig)
 	if err != nil {
 		return nil, errors.New("Can't unmarshal tsconfig after removing all the comments. Likely the file is corrupted")
 	}
