@@ -1,7 +1,6 @@
 package main
 
 import (
-	jsParser "compiler/internal/parser/js-parser"
 	"compiler/internal/parser/tsconfig"
 	"fmt"
 	"os"

@@ -1,0 +1,10 @@
+"first"
+
+"se\"cond"
+
+`third`
+
+`fou\`rth`
+
+'super\\\n\'escap\\\\\\\'ed'
+

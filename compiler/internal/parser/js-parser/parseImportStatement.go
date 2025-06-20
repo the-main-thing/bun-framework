@@ -173,14 +173,11 @@ func findPath(source *[]rune, offset int) (int, int) {
 		return -1, -1
 	}
 
-	start := pathStartIndex + 1
-	end := pathEndIndex - 1
-
-	if start >= end {
+	if pathStartIndex >= pathEndIndex {
 		return -1, -1
 	}
 
-	return start, end
+	return pathStartIndex, pathEndIndex
 }
 
 func skipWhitespace(source *[]rune, cursor int) int {

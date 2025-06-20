@@ -24,17 +24,20 @@ func GetRouteInfo(filePath string) RouteInfo {
 	imports := jsparser.ReadImports(&source, 0)
 	createRouteFnAlias := ""
 	for _, importStatement := range imports {
-		if importStatement.SourcePath != "bun-framework" {
+		for i := importStatement.StartIndex; i < importStatement.EndIndex; i++ {
+			source[i] = ' '
+		}
+		if strings.Contains(importStatement.SourcePath, "bun-framework") {
 			continue
 		}
 		for _, namedImport := range importStatement.NamedImports {
-			if namedImport.Name == "createRoute" {
+			if namedImport.Name == "createRoute" && createRouteFnAlias == "" {
 				if namedImport.Alias == "" {
 					createRouteFnAlias = "createRoute"
-					break
+					continue
 				}
 				createRouteFnAlias = namedImport.Alias
-				break
+				continue
 			}
 		}
 	}

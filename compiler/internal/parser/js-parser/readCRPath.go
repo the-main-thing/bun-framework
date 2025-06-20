@@ -30,8 +30,7 @@ func ReadCRPath(source *[]rune, crFunctionAlias string) string {
 		return ""
 	}
 	reading := false
-	for i, _ := range (*source)[start:] {
-		char := (*source)[i]
+	for i, char := range (*source)[start:] {
 		if char == '(' {
 			start += i + 1
 			reading = true
@@ -42,29 +41,6 @@ func ReadCRPath(source *[]rune, crFunctionAlias string) string {
 		return ""
 	}
 
-	openingSymbol := '!'
-	for i, char := range (*source)[start:] {
-		if char == ')' {
-			return ""
-		}
-		if char == '\'' || char == '"' || char == '`' {
-			if openingSymbol == '!' {
-				openingSymbol = char
-				continue
-			}
-			if openingSymbol != char {
-				continue
-			}
-			if i == 1 {
-				return ""
-			}
-			prev := (*source)[(start+i)-1]
-			if prev == '\\' {
-				continue
-			}
-			return string((*source)[start : start+i])
-		}
-	}
-
-	return ""
+	path, _ := GetStringWithQuotes(source, start)
+	return path
 }
