@@ -9,7 +9,7 @@ import (
 func TestAllImports(t *testing.T) {
 	expectedOutput := []ImportStatement{
 		{
-			SourcePath: "'bun-framework'",
+			SourcePath: "bun-framework",
 			NamedImports: []NamedImport{
 				{
 					Name: "createRoute",
@@ -25,11 +25,11 @@ func TestAllImports(t *testing.T) {
 					Name: "someConstant",
 				},
 			},
-			SourcePath: "'../../some-function'",
+			SourcePath: "../../some-function",
 		},
 		{
 			DefaultImport: "defaultAsterisk",
-			SourcePath:    "'fs'",
+			SourcePath:    "fs",
 		},
 		{
 			NamedImports: []NamedImport{
@@ -37,7 +37,7 @@ func TestAllImports(t *testing.T) {
 					Name: "namedNonTypeImport",
 				},
 			},
-			SourcePath: "'mixed-type-and-non-type-imports'",
+			SourcePath: "mixed-type-and-non-type-imports",
 		},
 		{
 			NamedImports: []NamedImport{
@@ -46,7 +46,7 @@ func TestAllImports(t *testing.T) {
 					Name:  "aliasedImport",
 				},
 			},
-			SourcePath: "'aliased-import'",
+			SourcePath: "aliased-import",
 		},
 		{
 			NamedImports: []NamedImport{
@@ -58,7 +58,7 @@ func TestAllImports(t *testing.T) {
 					Name:  "nonTypeAliasedIimport",
 				},
 			},
-			SourcePath: "'aliased-import'",
+			SourcePath: "aliased-import",
 		},
 		{
 			DefaultImport: "path",
@@ -67,10 +67,10 @@ func TestAllImports(t *testing.T) {
 					Name: "join",
 				},
 			},
-			SourcePath: "'path'",
+			SourcePath: "path",
 		},
 		{
-			SourcePath: "'ts-morph'",
+			SourcePath: "ts-morph",
 			NamedImports: []NamedImport{
 				{
 					Name: "Project",
@@ -78,7 +78,7 @@ func TestAllImports(t *testing.T) {
 			},
 		},
 		{
-			SourcePath: "'as'",
+			SourcePath: "as",
 			NamedImports: []NamedImport{
 				{
 					Name:  "join",

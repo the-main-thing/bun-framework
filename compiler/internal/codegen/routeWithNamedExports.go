@@ -35,21 +35,17 @@ export async function %s(request: BunRequest<%s>): Promise<ResponseType<typeof %
 }
 `
 
-const SHARED_IMPORTS = `
-
-`
-
-func routeWithNamedExports(route RouteInfo) string {
-	filename := filepath.Base(route.FilePath)
+func routeWithNamedExports(filePath string, routePath string, methods []string) string {
+	filename := filepath.Base(filePath)
 	extension := filepath.Ext(filename)
 	filename = strings.TrimSuffix(filename, extension)
 
 	content := fmt.Sprintf(`import type { BunRequest } from "bun"
 import { createContext, logger, type ResponseType, type Context } from "bun-framework"
-import { %s } from "./%s"`, strings.Join(route.Methods, ", "), filename)
+import { %s } from "./%s"`, strings.Join(methods, ", "), filename)
 
-	for _, method := range route.Methods {
-		content += fmt.Sprintf(NAMED_EXPORT_FUNCTION_TEMPLATE, method, route.Path, method, method, route.Path, method, method, route.Path)
+	for _, method := range methods {
+		content += fmt.Sprintf(NAMED_EXPORT_FUNCTION_TEMPLATE, method, routePath, method, method, routePath, method, method, routePath)
 	}
 
 	return content

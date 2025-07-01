@@ -11,7 +11,7 @@ import { createContext, logger, type ResponseType, type Context } from "bun-fram
 
 import routeHandler from "./%s"
 
-export default async function %s(request: BunRequest<%s>): Promise<ResponseType<typeof routeHandler>> {
+export default async function handleRoute(request: BunRequest<%s>): Promise<ResponseType<typeof routeHandler>> {
 	let context: Context
 	try {
 		context = await createContext(request)
@@ -38,21 +38,9 @@ export default async function %s(request: BunRequest<%s>): Promise<ResponseType<
 	}
 }`
 
-func routeWithDefaultExport(route RouteInfo) string {
-	filename := filepath.Base(route.FilePath)
+func routeWithDefaultExport(filePath string, routePath string) string {
+	filename := filepath.Base(filePath)
 	extension := filepath.Ext(filename)
 	filename = strings.TrimSuffix(filename, extension)
-	functionNameSource := []rune(route.Path)
-	for i, char := range functionNameSource {
-		if char >= 'a' && char <= 'z' {
-			continue
-		}
-		if char >= 'A' && char <= 'Z' {
-			continue
-		}
-		functionNameSource[i] = '_'
-	}
-	functionName := string(functionNameSource[1:])
-
-	return fmt.Sprintf(TEMPLATE, filename, functionName, route.Path, route.Path)
+	return fmt.Sprintf(TEMPLATE, filename, routePath, routePath)
 }

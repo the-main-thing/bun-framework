@@ -11,19 +11,14 @@ import (
 	"strings"
 )
 
-type GetAliasesProps struct {
-	BasePath         string
-	TsconfigFilePath string
-}
-
-func GetAliases(props GetAliasesProps) ([]types.ResolvedImportAlias, error) {
-	tsConfigFileBytes, err := os.ReadFile(props.TsconfigFilePath)
+func GetAliases(absoluteTsConfigFilePath string) ([]types.ResolvedImportAlias, error) {
+	tsConfigFileBytes, err := os.ReadFile(absoluteTsConfigFilePath)
 	if err != nil {
-		return nil, errors.New("Error reading tsconfig file: " + props.TsconfigFilePath + "\n" + err.Error())
+		return nil, errors.New("Error reading tsconfig file: " + absoluteTsConfigFilePath + "\n" + err.Error())
 	}
 
 	if tsConfigFileBytes == nil || len(tsConfigFileBytes) == 0 {
-		return nil, errors.New("tsconfig file is empty: " + props.TsconfigFilePath)
+		return nil, errors.New("tsconfig file is empty: " + absoluteTsConfigFilePath)
 	}
 
 	runes := []rune(string(tsConfigFileBytes))
@@ -38,11 +33,12 @@ func GetAliases(props GetAliasesProps) ([]types.ResolvedImportAlias, error) {
 	baseUrl := normalizePath(tsconfig.CompilerOptions.BaseUrl)
 	baseUrl, err = filepath.Abs(baseUrl)
 	if err != nil {
-		baseUrl, err = filepath.Abs(filepath.Join(props.BasePath, baseUrl))
+		tsconfigDir := filepath.Dir(absoluteTsConfigFilePath)
+		baseUrl, err = filepath.Abs(filepath.Join(tsconfigDir, baseUrl))
 		if err != nil {
 			return nil, errors.New("Can't resolve baseUrl: " + baseUrl + "\n" + err.Error())
 		}
-		if !strings.HasPrefix(props.BasePath, baseUrl) {
+		if !strings.HasPrefix(tsconfigDir, baseUrl) {
 			fmt.Fprintln(os.Stderr, "Resolved baseUrl is outside of project's base directory: "+baseUrl+"\n")
 		}
 	}

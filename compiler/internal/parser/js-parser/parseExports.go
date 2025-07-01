@@ -2,6 +2,7 @@ package jsparser
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -25,14 +26,13 @@ type metafileResp struct {
 func ParseExports(tsFilePath string, source string) Exports {
 	ext := filepath.Ext(tsFilePath)
 	var loader api.Loader
-	switch ext {
-	case ".ts":
-		loader = api.LoaderTS
-	case ".tsx":
+	if ext == ".tsx" {
 		loader = api.LoaderTSX
-	default:
+	} else {
 		loader = api.LoaderTS
 	}
+
+	outfilePath := filepath.Join(os.TempDir(), "bun-framework-compiler", strings.ReplaceAll(tsFilePath, string(filepath.Separator), "_")+"-out.js")
 
 	res := api.Build(api.BuildOptions{
 		Stdin: &api.StdinOptions{
@@ -46,9 +46,15 @@ func ParseExports(tsFilePath string, source string) Exports {
 		Metafile: true,
 		Format:   api.FormatESModule,
 		Platform: api.PlatformNeutral,
-		Outfile:  filepath.Join(os.TempDir(), "bun-framework-compiler", strings.ReplaceAll(tsFilePath, string(filepath.Separator), "_")+"-out.js"),
+		Outfile:  outfilePath,
 	})
-	// fmt.Println(res)
+	go func() {
+		err := os.Remove(outfilePath)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "Error removing temporary file that has been created for parsing exports by esbuild")
+			panic(err)
+		}
+	}()
 	if len(res.Errors) > 0 {
 		return Exports{}
 	}

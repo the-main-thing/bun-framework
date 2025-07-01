@@ -2,6 +2,7 @@ package jsparser
 
 import (
 	"path/filepath"
+	"slices"
 	"strings"
 	"testing"
 )
@@ -19,10 +20,10 @@ func TestGettingPackagesList(t *testing.T) {
 		t.Fatalf("Expected %d results, got %d\nexpected: %s\nreceived: %s\n", len(expectedOutput), len(results), strings.Join(expectedOutput, ", "), strings.Join(results, ", "))
 	}
 
-	for i, result := range results {
-		expected := expectedOutput[i]
-		if result != expected {
-			t.Fatalf("Expected %s, got %s", expected, result)
+	for _, result := range results {
+		if slices.Contains(expectedOutput, result) {
+			continue
 		}
+		t.Fatal("Got unexpected value", result)
 	}
 }

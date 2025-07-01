@@ -1,3 +1,3 @@
-package codegen
+package constants
 
 const METHODS = "GET,POST,PUT,DELETE,PATCH,OPTIONS,HEAD"

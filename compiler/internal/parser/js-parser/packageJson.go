@@ -37,7 +37,7 @@ func GetPackagesList(filePath string) []string {
 		return make([]string, 0, 0)
 	}
 	size := len(packageJson.Dependencies) + len(packageJson.DevDependencies) + len(packageJson.PeerDependencies)
-	packages := make([]string, 0, size)
+	packages := make([]string, size, size)
 	index := 0
 	for dependencyName := range packageJson.Dependencies {
 		packages[index] = dependencyName
